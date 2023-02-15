@@ -1,0 +1,29 @@
+{
+    "name": "AutoFill for Chrome",
+    "version": "1.07",
+    "manifest_version": 3,
+    "action": {
+        "default_title": "Show popup",
+        "default_popup": "popup/popup.html"
+    },
+    "permissions": [
+        "storage",
+        "tabs"
+    ],
+    "background": {
+        "service_worker": "service-worker.js"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "css": [
+                "scripts/content-styles.css"
+            ],
+            "js": [
+                "scripts/content-script.js"
+            ]
+        }
+    ]
+}
