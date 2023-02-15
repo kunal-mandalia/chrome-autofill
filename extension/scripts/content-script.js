@@ -1,87 +1,13 @@
-/**
- * 
- */
-var r = {
-    rules: [
-        {
-            data: {
-                value: "Kunal"
-            },
-            criteria: [
-                {
-                    attribute: "id",
-                    type: "contains_any",
-                    value: "firstname,first_name"
-                },
-                {
-                    attribute: "name",
-                    type: "contains_any",
-                    value: "firstname,first_name"
-                }
-            ]
-        },
-        {
-            data: {
-                value: "Mandalia"
-            },
-            criteria: [
-                {
-                    attribute: "id",
-                    type: "contains_any",
-                    value: "lastname,last_name"
-                },
-                {
-                    attribute: "name",
-                    type: "contains_any",
-                    value: "lastname,last_name"
-                }
-            ]
-        },
-        {
-            data: {
-                value: "kunal.v.mandalia@gmail.com"
-            },
-            criteria: [
-                {
-                    attribute: "id",
-                    type: "contains_any",
-                    value: "email"
-                },
-                {
-                    attribute: "name",
-                    type: "contains_any",
-                    value: "email"
-                }
-            ]
-        },
-        {
-            data: {
-                value: "07754930579"
-            },
-            criteria: [
-                {
-                    attribute: "id",
-                    type: "contains_any",
-                    value: "phone"
-                },
-                {
-                    attribute: "name",
-                    type: "contains_any",
-                    value: "phone"
-                }
-            ]
-        }
-    ]
-}
-
 function getAutofillSuggestion(input, rules) {
     // return first valid rule
     for (const rule of rules) {
         const satisfied = rule.criteria.some((c) => {
             const attribute = input[c.attribute];
+            // remove non alphanumeric chars
+            const simpleAttribute = attribute.replace(/[^A-Za-z0-9]/g, '');
             if (c.type === "contains_any") {
                 return c.value.split(",").some((term) => {
-                    return attribute.includes(term);
+                    return simpleAttribute.includes(term.toLowerCase());
                 })
             }
         });
@@ -115,7 +41,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     if (message.action === "suggest_autofill") {
         const r = await chrome.storage.local.get("rules");
         if (!r) return true;
-        const inputs = document.querySelectorAll('input[type="text"]');
+        const inputs = document.querySelectorAll('input');
         const suggestions = getSuggestions(inputs, r.rules);
         applySuggestions(suggestions);
     }
